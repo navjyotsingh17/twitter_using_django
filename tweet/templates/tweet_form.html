@@ -1,0 +1,198 @@
+{% extends "base.html" %} {% block title%} {{page}} {% endblock %} {% block content %}
+
+<!-- <div class="w-full">
+    <input
+    class="w-full h-7 my-5 outline-none text-xl"
+    type="text"
+      placeholder="What's happening?!"
+    />
+    <div class="flex gap-3 text-[#1d9bf0] items-center">
+      <span class="material-symbols-outlined"> globe_asia </span>
+      <span class="font-bold">Everyone can reply</span>
+    </div>
+    <hr class="h-[0.2px] my-2" />
+    <div class="flex justify-between">
+      <div
+        class="blueIcons flex gap-2 my-2 text-[#1d9bf0] cursor-pointer items-center"
+      >
+        <span class="material-symbols-outlined"> image </span>
+        <span class="material-symbols-outlined"> gif_box </span>
+        <span class="material-symbols-outlined"> ballot </span>
+        <span class="material-symbols-outlined"> mood </span>
+        <span class="material-symbols-outlined"> calendar_month </span>
+        <span class="material-symbols-outlined disabled:">
+          location_on
+        </span>
+      </div>
+      <div class="postButton">
+        <button
+          class="bg-[#1d9bf0] text-sm hover:bg-blue-400 cursor-pointer text-white w-[80px] rounded-full px-5 mx-5 py-3 mb-2"
+        >
+          Post
+        </button>
+      </div>
+    </div>
+  </div> -->
+
+<!-- <div class="ml-[100px]">
+    
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    <a href="{% url 'tweet_list' %}">back</a>
+</div> -->
+
+<div class="mx-auto px-4 py-8 max-w-4xl mt-[100px]">
+  <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="p-6">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">Post a Tweet</h1>
+      <form
+        action="{% url 'tweet_create' %}"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %}
+        <div class="mb-4">
+          <textarea
+            name="text"
+            id="text"
+            rows="4"
+            class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="What's happening?"
+          ></textarea>
+        </div>
+        <div class="mb-4">
+          <label
+            for="photo"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Add photos (up to 4)
+          </label>
+          <input
+            type="file"
+            name="photo"
+            id="photo"
+            accept="image/*"
+            multiple
+            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+        </div>
+        <div class="flex flex-col space-y-4">
+          <div id="image-preview" class="flex flex-wrap gap-2"></div>
+          <div class="flex justify-between">
+            <a
+              class="bg-[#1d9bf0] font-medium text-md hover:bg-blue-400 cursor-pointer text-white rounded-full px-2 mx-5 py-2 mb-2 w-20 text-center"
+              href="{% url 'tweet_list' %}"
+              >Back</a
+            >
+            <button
+              type="submit"
+              class="bg-[#1d9bf0] font-medium text-md hover:bg-blue-400 cursor-pointer text-white rounded-full px-2 mx-5 py-2 mb-2 w-20"
+            >
+              Post
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById("photo");
+  const imagePreview = document.getElementById("image-preview");
+  const maxImages = 4;
+
+  imageInput.addEventListener("change", function (event) {
+    imagePreview.innerHTML = "";
+    const files = event.target.files;
+
+    for (let i = 0; i < Math.min(files.length, maxImages); i++) {
+      const file = files[i];
+      if (file.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.classList.add("h-20", "w-20", "object-cover", "rounded-lg");
+        img.file = file;
+
+        const imgContainer = document.createElement("div");
+        imgContainer.classList.add("relative");
+
+        const removeBtn = document.createElement("button");
+        removeBtn.innerHTML = "&times;";
+        removeBtn.classList.add(
+          "absolute",
+          "top-0",
+          "right-0",
+          "bg-red-500",
+          "text-white",
+          "rounded-full",
+          "w-5",
+          "h-5",
+          "flex",
+          "items-center",
+          "justify-center",
+          "text-xs"
+        );
+        removeBtn.onclick = function () {
+          imgContainer.remove();
+          updateFileInput();
+        };
+
+        imgContainer.appendChild(img);
+        imgContainer.appendChild(removeBtn);
+        imagePreview.appendChild(imgContainer);
+
+        const reader = new FileReader();
+        reader.onload = (function (aImg) {
+          return function (e) {
+            aImg.src = e.target.result;
+          };
+        })(img);
+        reader.readAsDataURL(file);
+      }
+    }
+
+    if (files.length > maxImages) {
+      alert(
+        `You can only upload up to ${maxImages} images. The first ${maxImages} images have been selected.`
+      );
+    }
+  });
+
+  function updateFileInput() {
+    const dt = new DataTransfer();
+    const previewImages = imagePreview.querySelectorAll("img");
+    previewImages.forEach((img) => dt.items.add(img.file));
+    imageInput.files = dt.files;
+  }
+
+  document
+    .getElementById("upload-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+      const formData = new FormData();
+      const files = imageInput.files;
+
+      for (let i = 0; i < files.length; i++) {
+        formData.append("photos[]", files[i]);
+      }
+
+      fetch("/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    });
+</script>
+
+{% endblock %}

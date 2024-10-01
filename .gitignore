@@ -1,0 +1,84 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+# Environment variables #
+.env
+
+# Database #
+db.sqlite3
+db.sqlite3-journal
+
+# Django migrations #
+/migrations
+
+# Media #
+/media
+
+# Static files #
+/staticfiles
+/static
+
+# Virtual environments #
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm #
+.idea/
+
+# VS Code #
+.vscode/
+
+# Byte-compiled / optimized / DLL files #
+*.py[cod]
+*.so
+*.dylib
+*.pyd
+
+# Unit test / coverage reports #
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# mypy #
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook #
+.ipynb_checkpoints
+
+# Celery #
+celerybeat-schedule
+celerybeat.pid
+
+# Sentry #
+.sentryclirc
+
+# macOS #
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails #
+._*
+
+# Vim #
+*.swp
+.swp
+.swo
+
+# Windows #
+Thumbs.db
+ehthumbs.db
